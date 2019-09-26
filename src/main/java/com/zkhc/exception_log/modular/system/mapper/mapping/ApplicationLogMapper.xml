@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkhc.exception_log.modular.system.mapper.ApplicationLogMapper">
+    <select id="requestErrorInfo" resultType="java.lang.String">
+        SELECT
+        REPLACE(message,'\n','&lt;/br&gt;') as message
+        FROM
+        `APPLICATION_LOG`
+        WHERE
+        event_date BETWEEN #{startTime}
+        AND #{endTime}
+        AND system_name = #{systemName}
+        AND env = #{env}
+        AND thread_con = ( SELECT thread_con FROM `APPLICATION_LOG` WHERE event_date BETWEEN #{startTime} AND #{endTime} AND LEVEL = 'ERROR' AND env = #{env}  order by event_date limit 0,1 )
+        ORDER BY
+        event_date
+    </select>
+</mapper>

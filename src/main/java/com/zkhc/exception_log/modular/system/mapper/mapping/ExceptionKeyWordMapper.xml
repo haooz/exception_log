@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkhc.exception_log.modular.system.mapper.ExceptionKeyWordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zkhc.exception_log.modular.system.entity.ExceptionKeyWord">
+        <id column="id" property="id" />
+        <result column="key_word" property="keyWord" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, key_word
+    </sql>
+
+    <insert id="newKeyWord" parameterType="com.zkhc.exception_log.modular.system.entity.ExceptionKeyWord" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO sys_exception_key_word(key_word)values(#{keyWord});
+    </insert>
+
+    <select id="keyWordIsExists" resultType="com.zkhc.exception_log.modular.system.entity.ExceptionKeyWord">
+        select <include refid="Base_Column_List"></include>
+        from sys_exception_key_word where key_word=#{keyWord}
+    </select>
+    
+    <select id="selectKeyWords" resultType="java.lang.String">
+        select key_word as keyWord from sys_exception_key_word where id in <foreach collection="list" index="index" item="i" open="("
+                                                                                    separator="," close=")">
+        #{i}
+    </foreach>
+    </select>
+    
+    <select id="selectKeyWordId" resultType="java.lang.Integer">
+        select id from sys_exception_key_word where key_word=#{keyWord}
+    </select>
+</mapper>

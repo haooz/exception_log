@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>异常详情</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="${ctxPath}/assets/common/layui/css/layui.css"/>
+    <link rel="stylesheet" href="${ctxPath}/assets/common/module/admin.css"/>
+    <link href="${ctxPath}/assets/modular/exception_log/css/exception.css" rel="stylesheet">
+    <script src="${ctxPath}/assets/expand/plugins/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/common/layui/layui.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/common/layui/layui.all.js"></script>
+    <script src="${ctxPath}/assets/modular/exception_log/exception_edit.js"></script>
+    <script src="${ctxPath}/assets/modular/exception_log/cookie.js"></script>
+    <script src="${ctxPath}/assets/modular/exception_log/move.js"></script>
+    <script src="${ctxPath}/assets/common/js/ajax-object.js"></script>
+    <script src="${ctxPath}/assets/common/js/Feng.js"></script>
+</head>
+<body class="layui-layout-body" style="background-color:#ffffff;">
+<div style="width:100%;height:80px;">
+  <div class="layui-fluid" id="tl">
+    <div class="layui-row">
+        <div class="layui-col-sm3 fon">当前系统:<span class="hea">${item.system}</span></div>
+        <div class="layui-col-sm3 fon">ip地址:<span class="hea">${item.host}</span></div>
+        <div class="layui-col-sm2 fon">当前环境:<span class="hea">${item.runEnvironment}</span></div>
+        <div class="layui-col-sm2 fon">端口:<span class="hea">${item.port}</span></div>
+        <div class="layui-col-sm2 fon">异常时间:<span class="hea" id="eTime">${time}</span></div>
+    </div>
+   </div>
+</div>
+<div class="layui-fluid"  style="margin-top:10px;margin-bottom:10px;background-color:#DDDDDF;">
+    @for(requestErrorInfo in requestInfo){
+    <div class="layui-row">
+        ${requestErrorInfo}
+    </div>
+    @}
+</div>
+<div class="layui-fluid" style="background-color:#F3F3F4;">
+    <input type="hidden" id="id" value="${item.id}">
+    <input type="hidden" id="viewNum" value="${item.viewNum}">
+    <input type="hidden" id="exception" value="${exception}">
+    <input type="hidden" id="fileName" value="${fileName}">
+    <div class="layui-row" id="content" onclick="ExceptionOperate.addKeyAndSolution()">
+        ${item.content}
+    </div>
+    <div id="floadAD" class="floadAd">
+        <a class="close" href="javascript:void(0);" style="color: red;font-size:16px;">×关闭</a>
+        <div class="item" title='类似问题解决办法'>
+            <ul id="exceptionList"></ul>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <span id="viewNumber"></span>
+</div>
+<script type="text/javascript">
+    var visit;
+        $.ajax({
+            url: Feng.ctxPath+'/exceptionLog/exceptionLog_info/'+$("#id").val(),
+            type: "get",
+            dataType: "json",
+            async:false,
+            success: function (data) {
+                visit=data.viewNum;
+            }
+        })
+    $("#viewNumber").html("浏览次数：" + (visit+1));
+
+    $.ajax({
+        url: Feng.ctxPath+'/exceptionLog/updateViewNum/'+$("#id").val()+"/"+(visit+1),
+        type: "get",
+        dataType: "json",
+        async:false,
+        success: function (data) {
+        }
+    });
+    var content=$("#content").html();
+    var exception='${exception}';
+    var a="${specialWords}";
+    var extrude=a.split(",");
+    extrude.push(exception);
+    console.log(extrude);
+    var newstr=[];
+    $.each(extrude, function(i){
+        newstr[i]=content.replace(extrude[i], "<font color=#FF6633>"+extrude[i]+"</font>");
+        if(i>0){
+            newstr[i]=newstr[i-1].replace(extrude[i], "<font color=#FF6633>"+extrude[i]+"</font>");
+        }
+    });
+    $("#content").html(newstr[newstr.length-1]);
+
+    var reasonList='${sameReason}';
+    var jsonObj =  JSON.parse(reasonList);
+
+    var remarks='${remarks}';
+    var remarksObj =  JSON.parse(remarks);
+</script>
+
+<div class="side">
+    <ul>
+        <li><a href="javascript:void(0);" onclick="ExceptionOperate.addKey()"><div class="sidebox"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon01.png">&nbsp;关键字</div></a></li>
+        <li><a href="javascript:void(0);" onclick="ExceptionOperate.addReason()"><div class="sidebox"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon02.png">&nbsp;解决办法</div></a></li>
+        <li><a href="javascript:void(0);" onclick="ExceptionOperate.sameSolution()"><div class="sidebox"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon03.png">&nbsp;已解决</div></a></li>
+        <li><a href="javascript:void(0);" onclick="ExceptionOperate.addRemark()"><div class="sidebox"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon06.png">&nbsp;添加备注</div></a></li>
+        <li><a href="javascript:void(0);" onclick="ExceptionOperate.downloadData()"><div class="sidebox"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon04.png">&nbsp;下载</div></a></li>
+        <li style="border:none;"><a href="javascript:void(0);" onclick="ExceptionOperate.goTop()" class="sidetop"><img class="rightIcon" src="${ctxPath}/assets/common/images/exception/side_icon05.png"></a></li>
+    </ul>
+</div>
+<div class="float_layer" id="miaov_float_layer" style="z-index:10001;background-color: #fcfcfc">
+    <h2 style="margin-top:0px;margin-bottom:0px;">
+        <b>备注</b>
+        <a id="btn_min" href="javascript:;" class="min"></a>
+        <a id="btn_close" href="javascript:;" class="close"></a>
+    </h2>
+    <div class="content2">
+        <div class="wrap2">
+            <ul id="remarks" style="height:100px;overflow-y:scroll;">
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="gohome">
+    <a clas="animated bounceInUp" href="/" title="返回首页">
+        <i class="layui-icon layui-icon-home">
+        </i>
+    </a>
+</div>
+</body>

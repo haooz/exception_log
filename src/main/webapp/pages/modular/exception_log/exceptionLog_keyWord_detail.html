@@ -1,0 +1,31 @@
+@layout("/common/_container.html",{js:["/assets/modular/exception_log/keyWordDetail.js"]}){
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table lay-filter="demo">
+                        <thead>
+                        <tr>
+                            <th lay-data="{field:'username'}">关键字</th>
+                            <th lay-data="{field:'experience',width:80}">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for(ke in keyWords){
+                        <tr>
+                            <td><span class="res">${ke}</span></td>
+                            <td><a class="layui-btn layui-btn-danger layui-btn-xs delete" lay-event="delete">删除</a></td>
+                        </tr>
+                        @}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@}
+<script>
+    var id='${id}';
+</script>

@@ -1,0 +1,31 @@
+@layout("/common/_container.html",{js:["/assets/modular/exception_log/solutionDetail.js"]}){
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table lay-filter="demo">
+                        <thead>
+                        <tr>
+                            <th lay-data="{field:'username'}">解决办法</th>
+                            <th lay-data="{field:'experience',width:80}">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for(so in solutions){
+                        <tr>
+                            <td><input type="hidden" class="solu" value="${so.id}"><span class="res">${so.solution}</span></td>
+                            <td><a class="layui-btn layui-btn-danger layui-btn-xs delete" lay-event="delete">删除</a></td>
+                        </tr>
+                        @}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@}
+<script>
+    var id='${id}';
+</script>

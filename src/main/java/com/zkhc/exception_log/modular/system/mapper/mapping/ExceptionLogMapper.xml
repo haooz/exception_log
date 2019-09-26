@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkhc.exception_log.modular.system.mapper.ExceptionLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zkhc.exception_log.modular.system.entity.ExceptionLog">
+        <id column="id" property="id" />
+        <result column="system" property="system" />
+        <result column="run_environment" property="runEnvironment" />
+        <result column="host" property="host" />
+        <result column="port" property="port" />
+        <result column="createtime" property="createtime" />
+        <result column="content" property="content" />
+        <result column="remark" property="remark" />
+        <result column="view_num" property="viewNum" />
+        <result column="key_word" property="keyWord" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, system, run_environment, host, port, DATE_FORMAT(createtime,'%Y-%m-%d %H:%i:%s') as createtime, content, remark, view_num,key_word
+    </sql>
+
+    <insert id="insertNewException">
+        INSERT INTO sys_exception_log values(#{id},#{system},#{runEnvironment},#{host},#{port},#{createtime},#{content},NULL,0,#{keyWord})
+    </insert>
+
+    <select id="selectByEId" resultType="com.zkhc.exception_log.modular.system.entity.ExceptionLog">
+        select
+        id, system, run_environment as runEnvironment, host, port, createtime, content, remark, view_num as viewNum,key_word as keyWord
+        from sys_exception_log where id=#{id}
+    </select>
+
+    <update id="updateViewNum">
+        UPDATE sys_exception_log set view_num=#{viewNum} where id=#{id}
+    </update>
+
+    <select id="selectExceptionList" resultType="map" parameterType="com.baomidou.mybatisplus.extension.plugins.pagination.Page">
+        select <include refid="Base_Column_List"></include> from sys_exception_log
+        where 1=1
+        <if test="condition != null and condition !=''">
+            and (run_environment like CONCAT('%',#{condition},'%')
+            or host like CONCAT('%',#{condition},'%')
+            or port like CONCAT('%',#{condition},'%'))
+        </if>
+        ORDER BY createtime DESC
+    </select>
+
+    <delete id="deleteByEId">
+        delete from sys_exception_log where id=#{id}
+    </delete>
+
+    <update id="addRemark">
+        update sys_exception_log set remark=#{remark} where id=#{id}
+    </update>
+    <update id="addKeyWord">
+        update sys_exception_log set key_word=#{keyWord} where id=#{id}
+    </update>
+    <select id="sameList" resultType="map">
+        SELECT <include refid="Base_Column_List"></include>
+        from sys_exception_log sl where sl.content like CONCAT('%',#{exception},'%') and sl.remark is not null
+    </select>
+
+    <select id="sameReason" resultType="map">
+        SELECT sl.remark
+        from sys_exception_log sl where sl.content like CONCAT('%',#{exception},'%') and sl.remark is not null
+    </select>
+
+    <select id="selectExceptionKeyWords" resultType="map">
+        select key_word as keyWord from sys_exception_log where id=#{id}
+    </select>
+
+    <select id="sameSolution" parameterType="java.util.List" resultType="map">
+        SELECT
+        ses.id,
+        ses.solution as solution
+        FROM
+        sys_exception_solution ses
+        WHERE
+        id IN (
+        SELECT
+        sr.id
+        FROM
+        sys_solution_relation sr
+        WHERE
+        sr.key_word_id IN
+        <foreach collection="list" index="index" item="i" open="("
+                 separator="," close=")">
+            #{i}
+        </foreach>
+        )
+    </select>
+
+    <select id="selectSpecialWords" resultType="java.lang.String">
+        select special_words from sys_exception_special_words
+    </select>
+    
+    <select id="selectRemark" resultType="java.lang.String">
+        select remark from sys_exception_log where id=#{id}
+    </select>
+</mapper>

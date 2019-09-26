@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkhc.exception_log.modular.system.mapper.HomeMapper">
+    
+    <select id="dateScope" resultType="map">
+        select
+        date(min(createtime)) as minDate,
+        date(max(createtime)) as maxDate
+        from sys_exception_log
+    </select>
+
+    <select id="systemTotal" resultType="java.lang.String">
+        SELECT
+        count( b.id ) AS total
+        FROM
+        (
+        SELECT
+        DATE_FORMAT( ADDDATE( #{startTime}, INTERVAL @d DAY ), '%Y-%m-%d' ) AS date,
+        @d := @d + 1 DAY
+        FROM
+        sys_exception_log,
+        ( SELECT @d := 0 ) temp
+        WHERE
+        ADDDATE( #{startTime}, INTERVAL @d DAY ) &lt;= DATE_FORMAT( #{endTime}, '%Y-%m-%d' )
+        ORDER BY
+        DAY
+        ) a
+        LEFT JOIN sys_exception_log b ON date( b.createtime ) = a.date
+        AND b.system = #{system}
+        GROUP BY
+        a.date
+        ORDER BY
+        a.date
+    </select>
+
+    <select id="totalCount" resultType="java.lang.Integer">
+        select count(id) as total from sys_exception_log
+    </select>
+
+    <select id="totalCountBySys" resultType="map">
+        select count(id) as value,system as name from sys_exception_log group by system
+    </select>
+
+    <select id="systemList" resultType="java.lang.String">
+        select distinct system from sys_exception_log
+    </select>
+
+    <select id="envTotal" resultType="map">
+        SELECT
+            run_environment AS env,
+            count( id ) AS total
+        FROM
+            sys_exception_log
+        GROUP BY
+            run_environment
+    </select>
+
+    <select id="levelInfo" resultType="map">
+        SELECT LEVEL AS name
+            ,
+               count( event_id ) AS
+                        value
+
+        FROM
+            `application_log`
+        WHERE
+            date( event_date ) = #{timeValue}
+        GROUP BY
+            LEVEL
+        order by field(level,'INFO','WARN','ERROR')
+    </select>
+
+    <select id="levelList" resultType="java.lang.String">
+        SELECT level FROM application_log GROUP BY level
+    </select>
+</mapper>

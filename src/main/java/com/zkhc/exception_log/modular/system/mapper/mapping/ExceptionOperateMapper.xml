@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkhc.exception_log.modular.system.mapper.ExceptionOperateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zkhc.exception_log.modular.system.entity.ExceptionOperate">
+        <id column="id" property="id" />
+        <result column="exception_id" property="exceptionId" />
+        <result column="content" property="content" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, exception_id, content, create_time
+    </sql>
+
+    <select id="selectDateList" resultType="java.lang.String">
+        SELECT
+            date( create_time )
+        FROM
+            sys_exception_operate
+        GROUP BY
+            date( create_time )
+        ORDER BY
+            date( create_time ) desc
+    </select>
+
+    <select id="operateMsgByDate" resultType="map">
+        SELECT
+            exception_id,
+            msg,
+            user_name,
+            content
+        FROM
+            `sys_exception_operate`
+        WHERE
+            date( create_time ) = #{createTime}
+    </select>
+</mapper>
