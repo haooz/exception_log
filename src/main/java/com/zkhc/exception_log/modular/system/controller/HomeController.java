@@ -3,6 +3,7 @@ package com.zkhc.exception_log.modular.system.controller;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zkhc.exception_log.core.util.CollectionUtil;
 import com.zkhc.exception_log.core.util.DateTimeUtil;
 import com.zkhc.exception_log.modular.system.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,20 @@ public class HomeController extends BaseController {
     }
 
     /**
+     * 各系统每日异常总数
+     * @return
+     */
+    @RequestMapping(value = "/systemTotal", method = RequestMethod.GET)
+    @ResponseBody
+    public Object systemTotal() throws ParseException {
+        JSONObject result = new JSONObject();
+        Map<String,Object> map=homeService.dateScope();
+        result.put("data",homeService.homeSystemTotal(map.get("minDate").toString(),map.get("maxDate").toString()));
+        return JSON.toJSON(result);
+    }
+
+
+    /**
      * 各系统每日异常占比
      * @return
      */
@@ -88,6 +103,7 @@ public class HomeController extends BaseController {
         List<Map<String,Object>> levelInfo=homeService.levelInfo(time);
         List<String> levels=homeService.levelList();
         List<Map<String,Object>> list=new ArrayList<>();
+        List<String> levelIsExist=new ArrayList<>();
         if(levelInfo.size()==0){
             for(int i=0;i<levels.size();i++){
                 Map<String,Object> map=new HashMap<>();
@@ -97,17 +113,17 @@ public class HomeController extends BaseController {
             }
         }else{
             for(Map mp:levelInfo){
-                for(int i=0;i<levels.size();i++){
-                    if(mp.containsValue(levels.get(i))==false){
-                        Map<String,Object> map=new HashMap<>();
-                        map.put("name",levels.get(i));
-                        map.put("value",0);
-                        list.add(map);
-                    }
-                }
+                levelIsExist.add(mp.get("name").toString());
             }
+            List<String> newLevel= new ArrayList<>(CollectionUtil.getDiffentNoDuplicate(levelIsExist,levels));
+            for(String item:newLevel){
+                Map<String,Object> map=new HashMap<>();
+                map.put("name",item);
+                map.put("value",0);
+                list.add(map);
+            }
+            levelInfo.addAll(list);
         }
-        levelInfo.addAll(list);
         result.put("levelInfo",JSON.toJSON(levelInfo));
         return JSON.toJSON(result);
     }
@@ -131,13 +147,13 @@ public class HomeController extends BaseController {
             min.set(min.get(Calendar.YEAR), min.get(Calendar.MONTH), min.get(Calendar.DAY_OF_MONTH));
 
             max.setTime(sdf.parse(maxDate));
-            max.set(max.get(Calendar.YEAR), max.get(Calendar.MONTH), min.get(Calendar.DAY_OF_MONTH));
+            max.set(max.get(Calendar.YEAR), max.get(Calendar.MONTH), max.get(Calendar.DAY_OF_MONTH));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         Calendar curr = min;
-        while (curr.before(max)) {
+        while (curr.before(max) || curr.equals(max)) {
             result.add(sdf.format(curr.getTime()));
             curr.add(Calendar.DAY_OF_MONTH, 1);
         }

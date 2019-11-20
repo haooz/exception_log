@@ -3,6 +3,7 @@ package com.zkhc.exception_log.modular.system.controller;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.core.mutidatasource.annotion.DataSource;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zkhc.exception_log.core.common.annotion.BussinessLog;
 import com.zkhc.exception_log.core.common.constant.DatasourceEnum;
@@ -74,6 +75,46 @@ public class ExceptionLogController extends BaseController {
         page.setRecords(new LogWrapper(result).wrap());
 
         return LayuiPageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 发生异常添加至数据库
+     */
+    @RequestMapping(value = "/addException",method = RequestMethod.POST)
+    @ResponseBody
+    @DataSource(name= DatasourceEnum.DATA_SOURCE_ZNKF_ADMIN)
+    @Transactional(propagation = Propagation.NESTED,
+            isolation = Isolation.DEFAULT, readOnly = false)
+    public Object addException(@RequestBody String param) {
+        JSONObject jo = new JSONObject();
+        Map<String, Object> m = (Map<String, Object>) jo.parse(param);
+        ExceptionLog exceptionLog = new ExceptionLog(m.get("id").toString(), m.get("system").toString(), m.get("runEnvironment").toString(), m.get("host").toString(), Integer.parseInt(m.get("port").toString()), new Date(), m.get("exception").toString());
+        //exceptionLogService.insertNewException(exceptionLog);
+        String con = exceptionLog.getContent();
+        String keyWordId = "";
+        String keyWord = "";
+        if (con.indexOf("Caused by: ") != -1) {
+            String a = con.substring(con.indexOf("Caused by: "));
+            keyWord = a.substring(0, a.indexOf(":", 10));
+        } else {
+            if(con.indexOf(":") < con.indexOf("</br>")){
+                keyWord=con.substring(0,con.indexOf(":"));
+            }else if(con.indexOf("</br>") < con.indexOf(":")) {
+                keyWord = con.substring(0, con.indexOf("</br>"));
+            }
+        }
+        ExceptionKeyWord ek = exceptionKeyWordService.keyWordIsExists(keyWord);
+        if (ek != null) {
+            keyWordId = ek.getId().toString();
+        } else {
+            ExceptionKeyWord exceptionKeyWord = new ExceptionKeyWord();
+            exceptionKeyWord.setKeyWord(keyWord);
+            exceptionKeyWordService.newKeyWord(exceptionKeyWord);
+            keyWordId = exceptionKeyWord.getId().toString();
+        }
+        exceptionLog.setKeyWord(keyWordId + ",");
+        exceptionLogService.insertNewException(exceptionLog);
+        return SUCCESS_TIP;
     }
 
     /**
@@ -449,7 +490,6 @@ public class ExceptionLogController extends BaseController {
         for(int i=0;i<remarkArray.length;i++){
             list.add(remarkArray[i]);
         }
-        System.out.println(JSON.toJSON(list).toString());
         return list;
     }
 

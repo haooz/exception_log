@@ -76,20 +76,24 @@ public class DD {
         DD.showUrl = showUrl;
     }
 
+    private static HttpClient httpclient=null;
+
+    /**
+     * 初始化HttpClient
+     */
+    public static void initClient(){
+        try {
+            httpclient = HttpClients.custom().setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom().loadTrustMaterial(null,new TrustSelfSignedStrategy()).build())).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private static void setMessage(String message_con, String token) {
         try {
-            HttpClient httpclient = null;
-            try {
-                httpclient = HttpClients.custom().setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom().loadTrustMaterial(null,new TrustSelfSignedStrategy()).build())).build();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
+            if(httpclient==null){
+                initClient();
             }
-
             HttpPost httppost = new HttpPost(token);
             httppost.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -112,15 +116,8 @@ public class DD {
 
     private static void setAliMessage(String message_con, String token) {
         try {
-            HttpClient httpclient = null;
-            try {
-                httpclient = HttpClients.custom().setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom().loadTrustMaterial(null,new TrustSelfSignedStrategy()).build())).build();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
+            if(httpclient==null){
+                initClient();
             }
             HttpPost httppost = new HttpPost(token);
             httppost.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -180,15 +177,8 @@ public class DD {
      */
     private static void setExceptionMessage(String id, String system, String runEnvironment, String host, int port, String exception, String token) {
         try {
-            HttpClient httpclient = null;
-            try {
-                httpclient = HttpClients.custom().setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom().loadTrustMaterial(null,new TrustSelfSignedStrategy()).build())).build();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
+            if(httpclient==null){
+                initClient();
             }
             HttpPost httppost = new HttpPost(token);
             httppost.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -226,15 +216,8 @@ public class DD {
      */
     private static void dealMessage(String id, String message,String token) {
         try {
-            HttpClient httpclient = null;
-            try {
-                httpclient = HttpClients.custom().setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom().loadTrustMaterial(null,new TrustSelfSignedStrategy()).build())).build();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
-                e.printStackTrace();
+            if(httpclient==null){
+                initClient();
             }
             HttpPost httppost = new HttpPost(token);
             httppost.addHeader("Content-Type", "application/json; charset=utf-8");

@@ -15,18 +15,51 @@
         FROM
         (
         SELECT
-        DATE_FORMAT( ADDDATE( #{startTime}, INTERVAL @d DAY ), '%Y-%m-%d' ) AS date,
-        @d := @d + 1 DAY
+        adddate( #{startTime}, numlist.id ) AS 'date'
         FROM
-        sys_exception_log,
-        ( SELECT @d := 0 ) temp
+        (
+        SELECT
+        n1.i + n10.i * 10 + n100.i * 100 AS id
+        FROM
+        num n1
+        CROSS JOIN num AS n10
+        CROSS JOIN num AS n100
+        ) AS numlist
         WHERE
-        ADDDATE( #{startTime}, INTERVAL @d DAY ) &lt;= DATE_FORMAT( #{endTime}, '%Y-%m-%d' )
-        ORDER BY
-        DAY
+        adddate( #{startTime}, numlist.id ) &lt;= #{endTime}
         ) a
         LEFT JOIN sys_exception_log b ON date( b.createtime ) = a.date
         AND b.system = #{system}
+        GROUP BY
+        a.date
+        ORDER BY
+        a.date
+    </select>
+
+    <select id="homeSystemTotal" resultType="map">
+        SELECT
+        a.date as dayTime,
+        count( case when b.system='doctor_app_api' then 1 end ) AS doctorTotal,
+		count( case when b.system='patient_app_api' then 1 end ) AS patientTotal,
+		count( case when b.system='zkhc_pay_api' then 1 end) AS payTotal,
+		count( case when b.system='app_admin' then 1 end) AS adminTotal
+        FROM
+        (
+        SELECT
+        adddate( #{startTime}, numlist.id ) AS 'date'
+        FROM
+        (
+        SELECT
+        n1.i + n10.i * 10 + n100.i * 100 AS id
+        FROM
+        num n1
+        CROSS JOIN num AS n10
+        CROSS JOIN num AS n100
+        ) AS numlist
+        WHERE
+        adddate( #{startTime}, numlist.id ) &lt;= #{endTime}
+        ) a
+        LEFT JOIN sys_exception_log b ON date( b.createtime ) = a.date
         GROUP BY
         a.date
         ORDER BY
@@ -62,7 +95,7 @@
                         value
 
         FROM
-            `application_log`
+            `APPLICATION_LOG`
         WHERE
             date( event_date ) = #{timeValue}
         GROUP BY
@@ -71,6 +104,6 @@
     </select>
 
     <select id="levelList" resultType="java.lang.String">
-        SELECT level FROM application_log GROUP BY level
+        SELECT level FROM `APPLICATION_LOG` GROUP BY level
     </select>
 </mapper>

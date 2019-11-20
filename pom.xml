@@ -287,9 +287,9 @@
             </activation>
         </profile>
         <profile>
-            <id>dev</id>
+            <id>produce</id>
             <properties>
-                <spring.active>dev</spring.active>
+                <spring.active>produce</spring.active>
             </properties>
         </profile>
     </profiles>

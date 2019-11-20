@@ -31,6 +31,10 @@ public class HomeService extends ServiceImpl<HomeMapper, ExceptionLog> {
         return this.baseMapper.systemTotal(system,startTime,endTime);
     }
 
+    @DataSource(name= DatasourceEnum.DATA_SOURCE_ZNKF_ADMIN)
+    public List<Map<String,Object>> homeSystemTotal(String startTime,String endTime){
+        return this.baseMapper.homeSystemTotal(startTime,endTime);
+    }
     /**
      * 异常总数
      * @return

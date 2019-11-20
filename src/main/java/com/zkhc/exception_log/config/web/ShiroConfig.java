@@ -180,7 +180,7 @@ public class ShiroConfig {
         for (String nonePermissionRe : NONE_PERMISSION_RES) {
             hashMap.put(nonePermissionRe, "anon");
         }
-        hashMap.put("/home/sysTotal", "anon");
+        hashMap.put("/exceptionLog/addException", "anon");
         hashMap.put("/exceptionLog/exceptionLog_detail/**", "anon");
         hashMap.put("/exceptionLog/addSolution/**", "anon");
         hashMap.put("/exceptionLog/addSolutionWithKW/**", "anon");

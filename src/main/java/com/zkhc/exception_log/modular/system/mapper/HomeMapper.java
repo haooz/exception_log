@@ -21,6 +21,7 @@ public interface HomeMapper extends BaseMapper<ExceptionLog> {
      */
     List<String> systemTotal(@Param("system") String system, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
+    List<Map<String,Object>> homeSystemTotal(@Param("startTime") String startTime, @Param("endTime") String endTime);
     /**
      * 异常总数
      * @return

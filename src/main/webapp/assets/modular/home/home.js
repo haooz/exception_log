@@ -1,9 +1,12 @@
 $(function () {
-    loadEchartSysTotalData();
+    loadSystemTotalData();
     loadEchartSysPercentData();
     loadOperateLogData();
     loadEchartEnvTotalData();
     loadEchartLevelData();
+    /*if($("#operateLog").find("li").length <= 0){
+        $("#operateLog").append("<li>暂无数据</li>")
+    }*/
 })
 
 /**
@@ -159,6 +162,98 @@ function setEchartSysTotal(legendData, dataX, data, startValue) {
 }
 
 /**
+ * 获取各系统异常统计数据
+ */
+function loadSystemTotalData() {
+    $.ajax({
+        type: "get",
+        dataType: "json",
+        url: '/home/systemTotal',
+        success: function (data) {
+            var dataObj=data.data;
+            var xData=_.pluck(dataObj,"dayTime");
+            setSysTotalEcharts(xData,dataObj, currentTime(xData[xData.length - 1], -10));
+        }
+    });
+}
+
+/**
+ * 渲染各系统异常统计
+ * @param legendData
+ * @param dataX
+ * @param data
+ * @param startValue
+ */
+function setSysTotalEcharts(xData,dataObj, startValue) {
+    var myChartsSysTotal = echarts.init(document.getElementById('sysTotal'), myEchartsTheme);
+    var optionSysTotal = {
+        dataZoom: [
+            {
+                id: 'dataZoomX',
+                type: 'slider',
+                filterMode: 'filter',
+                startValue: startValue
+            }
+        ],
+        title: {
+            text: '异常数量'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend:{
+            data:['doctor_app_api','patient_app_api','zkhc_pay_api','app_admin']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        /*toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },*/
+        xAxis:{
+            type: 'category',
+            boundaryGap: false,
+            data: xData
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name:'doctor_app_api',
+                type:'line',
+                stack: '总量',
+                data:_.pluck(dataObj,"doctorTotal")
+            },
+            {
+                name:'patient_app_api',
+                type:'line',
+                stack: '总量',
+                data:_.pluck(dataObj,"patientTotal")
+            },
+            {
+                name:'zkhc_pay_api',
+                type:'line',
+                stack: '总量',
+                data:_.pluck(dataObj,"payTotal")
+            },
+            {
+                name:'app_admin',
+                type:'line',
+                stack: '总量',
+                data:_.pluck(dataObj,"adminTotal")
+            }
+        ]
+    };
+    myChartsSysTotal.setOption(optionSysTotal);
+}
+
+/**
  * 获取num天前/后日期（yyyy-MM-dd）
  * @param num
  * @returns {string}
@@ -248,44 +343,49 @@ function loadOperateLogData() {
         dataType: "json",
         url: '/exceptionOperate/createTimeList',
         success: function (data) {
-            $.each(data, function (i) {
-                var detail = "";
-                $.ajax({
-                    type: "get",
-                    dataType: "json",
-                    url: '/exceptionOperate/list/' + data[i],
-                    async: false,
-                    success: function (result) {
-                        if(result.length>0){
-                            $.each(result, function (i) {
-                                var userName = "";
-                                if (typeof(result[i].user_name) != "undefined") {
-                                    userName = result[i].user_name;
-                                }
-                                detail += "<li><span style='font-weight:600'>" + userName + "</span>\t<span class='text-danger'>" + result[i].msg + ":</span>\t" + result[i].content + "<span class='layui-badge-rim check' onclick=\"javascript:window.open('/exceptionLog/exceptionLog_detail/" + result[i].exception_id + "')\">查看</span></li>\n";
-                            })
-                        }else{
-                            detail +="<span>暂无数据</span>";
-                        }
+            if(data.length>0){
+                $.each(data, function (i) {
+                    var detail = "";
+                    $.ajax({
+                        type: "get",
+                        dataType: "json",
+                        url: '/exceptionOperate/list/' + data[i],
+                        async: false,
+                        success: function (result) {
+                            if(result.length>0){
+                                $.each(result, function (i) {
+                                    var userName = "";
+                                    if (typeof(result[i].user_name) != "undefined") {
+                                        userName = result[i].user_name;
+                                    }
+                                    detail += "<li><span style='font-weight:600'>" + userName + "</span>\t<span class='text-danger'>" + result[i].msg + ":</span>\t" + result[i].content + "<span class='layui-badge-rim check' onclick=\"javascript:window.open('/exceptionLog/exceptionLog_detail/" + result[i].exception_id + "')\">查看</span></li>\n";
+                                })
+                            }else{
+                                detail +="<span>暂无数据</span>";
+                            }
 
+                        }
+                    });
+                    $("#operateLog")
+                        .append("<li class=\"layui-timeline-item\">\n" +
+                            "                            <i class=\"layui-icon layui-timeline-axis\">&#xe63f;</i>\n" +
+                            "                            <div class=\"layui-timeline-content layui-text\">\n" +
+                            "                                <h3 class=\"layui-timeline-title\">\n" +
+                            "                                    <small>" + data[i] + "</small>&emsp;\n" +
+                            "                                </h3>\n" +
+                            "                                <ul>\n" +
+                            "" + detail + "" +
+                            "                                </ul>\n" +
+                            "                            </div>\n" +
+                            "                        </li>");
+                    if(i>=5){
+                        return false;
                     }
                 });
-                $("#operateLog")
-                    .append("<li class=\"layui-timeline-item\">\n" +
-                        "                            <i class=\"layui-icon layui-timeline-axis\">&#xe63f;</i>\n" +
-                        "                            <div class=\"layui-timeline-content layui-text\">\n" +
-                        "                                <h3 class=\"layui-timeline-title\">\n" +
-                        "                                    <small>" + data[i] + "</small>&emsp;\n" +
-                        "                                </h3>\n" +
-                        "                                <ul>\n" +
-                        "" + detail + "" +
-                        "                                </ul>\n" +
-                        "                            </div>\n" +
-                        "                        </li>");
-                if(i>=5){
-                    return false;
-                }
-            });
+            }else{
+                $("#operateLog").append("<li>暂无数据</li>");
+            }
+
         }
     });
 }
