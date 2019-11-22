@@ -1,4 +1,5 @@
 $(function () {
+    //loadEchartSysTotalData();
     loadSystemTotalData();
     loadEchartSysPercentData();
     loadOperateLogData();
@@ -20,7 +21,12 @@ function loadEchartSysTotalData() {
         success: function (data) {
             var legendData = data.legendData;
             var xData = data.xData;
-            setEchartSysTotal(legendData, xData, data, currentTime(xData[xData.length - 1], -10));
+            var startValue=currentTime(xData[xData.length - 1],-1);
+            if(xData.length>10){
+                startValue=currentTime(xData[xData.length - 1], -10);
+            }
+            console.log(startValue);
+            setEchartSysTotal(legendData, xData, data, startValue);
         }
     });
 }
@@ -172,7 +178,11 @@ function loadSystemTotalData() {
         success: function (data) {
             var dataObj=data.data;
             var xData=_.pluck(dataObj,"dayTime");
-            setSysTotalEcharts(xData,dataObj, currentTime(xData[xData.length - 1], -10));
+            var startValue=0;
+            if(xData.length>10){
+                startValue=currentTime(xData[xData.length - 1], -10);
+            }
+            setSysTotalEcharts(xData,dataObj, startValue);
         }
     });
 }
@@ -187,14 +197,35 @@ function loadSystemTotalData() {
 function setSysTotalEcharts(xData,dataObj, startValue) {
     var myChartsSysTotal = echarts.init(document.getElementById('sysTotal'), myEchartsTheme);
     var optionSysTotal = {
-        dataZoom: [
+        /*dataZoom: [
             {
                 id: 'dataZoomX',
                 type: 'slider',
                 filterMode: 'filter',
-                startValue: startValue
+                startValue: ''
             }
-        ],
+        ],*/
+        dataZoom: function () {
+        var zoom = [];
+        if (startValue!=0) {
+            var item = {
+                id: 'dataZoomX',
+                type: 'slider',
+                filterMode: 'filter',
+                startValue:startValue
+            }
+            zoom.push(item);
+        }else{
+            var item = {
+                id: 'dataZoomX',
+                type: 'slider',
+                filterMode: 'filter'
+            }
+            zoom.push(item);
+        }
+        ;
+        return zoom;
+    }(),
         title: {
             text: '异常数量'
         },
@@ -269,6 +300,21 @@ function currentTime(date, num) {
     d < 10 ? d = '0' + d : d;
     var now_time = y + '-' + m + '-' + d;
     return now_time;
+}
+
+function dayTime(){
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    if (month < 10) {
+        month = "0" + month;
+    }
+    if (day < 10) {
+        day = "0" + day;
+    }
+    var nowDate = year + '-' + month + '-' + day;
+    return nowDate;
 }
 
 /**
@@ -457,7 +503,7 @@ function setEchartLevel(xData,yData,percentData) {
                 }
             ],
             series: [
-                {name: '', type: 'bar',itemStyle: {
+                {name: '', type: 'bar',barWidth : 25,barMaxWidth: 25,itemStyle: {
                     normal: {
                         color: function(params) {
                             var colorList = ["#009688", "#1E9FFF", "#5FB878", "#FFB980", "#D87A80", "#8d98b3", "#e5cf0d", "#97b552", "#95706d", "#dc69aa", "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#c05050", "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"];

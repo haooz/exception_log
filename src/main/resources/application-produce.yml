@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.16.110.238:549/zkhc_exception_admin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    url: jdbc:mysql://172.16.110.238:11053/zkhc_exception_admin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
     username: zkhc_exception_user
     password: Lyzk.ex,2019
     data-source-name: exceptionAdminDataSource
@@ -15,20 +15,20 @@ guns:
   dataConnectionPropertiesList:
     - dataSourceName: znkfAdminDatasource
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://172.16.110.238:549/znkf_admin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+      url: jdbc:mysql://172.16.110.238:11053/znkf_admin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
       username: zkhc_admin
       password: Lykj.2018
 
     - dataSourceName: loggingDatasource
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://172.16.110.238:549/logging?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+      url: jdbc:mysql://172.16.110.238:11053/logging?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
       username: zkhc_exception_user
       password: Lyzk.ex,2019
 
 #------------------------------钉钉配置---------------------------
 dd:
-  # access-token: 5d80906aa23535287411354dfbb16e5ba2896640d6293646a7a65d7b344b0f1e
-  access-token: 0fdb2906040b47ed3ec320aa9c245198c5f890c301eaaf40f18ba554fb05b4c0
+  access-token: 5d80906aa23535287411354dfbb16e5ba2896640d6293646a7a65d7b344b0f1e
+  # access-token: 0fdb2906040b47ed3ec320aa9c245198c5f890c301eaaf40f18ba554fb05b4c0
   dev-token: 59db0dff77b7748137f797b8c5428896b0b7b799b202b1aa9392180f79921946
   test-token: 3fdd2fdd8c09d228d2278acc0c10baaf0609722f99c21b43811d39adaa4bef57
   pro-token : 70e873672e5cc194b81b6dfe795b083211e4daa9f758942940a58c0b0fec0ee4

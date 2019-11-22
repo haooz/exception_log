@@ -8,6 +8,7 @@ import com.zkhc.exception_log.core.util.DateTimeUtil;
 import com.zkhc.exception_log.modular.system.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,7 +58,13 @@ public class HomeController extends BaseController {
     public Object systemTotal() throws ParseException {
         JSONObject result = new JSONObject();
         Map<String,Object> map=homeService.dateScope();
-        result.put("data",homeService.homeSystemTotal(map.get("minDate").toString(),map.get("maxDate").toString()));
+        String startTime=new Date().toLocaleString();
+        String endTime=new Date().toLocaleString();
+        if(!CollectionUtils.isEmpty(map)){
+            startTime=map.get("minDate").toString();
+            endTime=map.get("maxDate").toString();
+        }
+        result.put("data",homeService.homeSystemTotal(startTime,endTime));
         return JSON.toJSON(result);
     }
 

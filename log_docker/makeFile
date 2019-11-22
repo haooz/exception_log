@@ -1,0 +1,22 @@
+docker build -t registry.znkf.kangmochou.com:1579/log-center-mysql:19.11.01 .
+
+
+docker tag registry.znkf.kangmochou.com:1579/log-center-mysql:latest registry.znkf.kangmochou.com:1579/log-center-mysql:19.10.01
+
+# mysql容器启动命令  11053 5003
+docker stop zkhc_mysql_log_5003
+docker rm -f zkhc_mysql_log_5003
+docker run \
+--name zkhc_mysql_log_5003 \
+-p 5003:3306 \
+--privileged=true \
+--restart always \
+-v /home/zkhc_zhh/exception_log/log_docker/data/mysql_log_5003/mysql_data:/var/lib/mysql \
+-v /home/zkhc_zhh/exception_log/log_docker/data/mysql_log_5003/mysql_log:/var/log/mysql \
+-v /home/zkhc_zhh/exception_log/log_docker/data/mysql_log_5003/mysql_conf:/etc/mysql/conf.d \
+-e TIMEZONE=Asia/Shanghai \
+-e DEBUG_COMPOSE_ENTRYPOINT=1 \
+-e MYSQL_ROOT_PASSWORD="root.zkhcDB.0501" \
+-e MYSQL_GENERAL_LOG=0 \
+-d registry.znkf.kangmochou.com:1579/log-center-mysql:19.11.01
+
