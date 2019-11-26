@@ -506,7 +506,7 @@ function setEchartLevel(xData,yData,percentData) {
                 {name: '', type: 'bar',barWidth : 25,barMaxWidth: 25,itemStyle: {
                     normal: {
                         color: function(params) {
-                            var colorList = ["#009688", "#1E9FFF", "#5FB878", "#FFB980", "#D87A80", "#8d98b3", "#e5cf0d", "#97b552", "#95706d", "#dc69aa", "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#c05050", "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"];
+                            var colorList = ["#009688", "#c05050", "#e5cf0d", "#FFB980", "#D87A80", "#8d98b3", "#5FB878", "#97b552", "#95706d", "#dc69aa", "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#1E9FFF", "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"];
                             return colorList[params.dataIndex]
                         }
                     }
@@ -516,7 +516,15 @@ function setEchartLevel(xData,yData,percentData) {
                     type: 'pie',
                     center: ['75%', '35%'],
                     radius: '28%',
-                    z: 999999
+                    z: 999999,
+                    itemStyle: {
+                        normal: {
+                            color: function(params) {
+                                var colorList = ["#009688", "#c05050", "#e5cf0d", "#FFB980", "#D87A80", "#8d98b3", "#5FB878", "#97b552", "#95706d", "#dc69aa", "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#1E9FFF", "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"];
+                                return colorList[params.dataIndex]
+                            }
+                        }
+                    }
                 }
             ]
         },

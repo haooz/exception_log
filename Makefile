@@ -12,6 +12,7 @@ docker run -d \
 --name exception_log_${PROFILE} \
 -v /home/zkhc_zhh/exception_log/logs/${PROFILE}:/root/app/exception_log/${PROFILE} \
 -v /home/zkhc_zhh/exception_log/target/exception_log.jar:/opt/app.jar \
+-v /home/zkhc_zhh/exception_log/:/opt/exception_log \
 -e spring.profiles.active=${PROFILE}  \
 ${image_name}
 

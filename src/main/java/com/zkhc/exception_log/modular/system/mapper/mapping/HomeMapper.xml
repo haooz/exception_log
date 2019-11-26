@@ -100,7 +100,7 @@
             date( event_date ) = #{timeValue}
         GROUP BY
             LEVEL
-        order by field(level,'INFO','WARN','ERROR')
+        order by field(level,'INFO','ERROR','WARN')
     </select>
 
     <select id="levelList" resultType="java.lang.String">

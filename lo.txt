@@ -1,0 +1,31 @@
+   0 ls
+   1 spring
+   2 echo $JAVA_HOME
+   3 ls
+   4 cd /opt/exception_log
+   5 ls
+   6 tar -zxvf spring-boot-cli-2.1.5.RELEASE-bin.tar.gz
+   7 ls
+   8 mv spring-2.1.5.RELEASE 
+   9 mv spring-2.1.5.RELEASE /opt/
+  10 cd /opt/
+  11 ls
+  12 cd spring-2.1.5.RELEASE/
+  13 ls
+  14 dir
+  15 dir 
+  16 pwd
+  17 ln -s /opt/spring-2.1.5.RELEASE/shell-completion/bash/spring /etc/bash_completion.d/spring
+  18 ln -s /opt/spring-2.1.5.RELEASE/shell-completion/zsh/_spring /usr/local/share/zsh/site-functions/_spring
+  19 mkdir -p /etc/bash_completion.d/
+  20 ln -s /opt/spring-2.1.5.RELEASE/shell-completion/bash/spring /etc/bash_completion.d/spring
+  21 mkdir -p /usr/local/share/zsh/site-functions
+  22 ln -s /opt/spring-2.1.5.RELEASE/shell-completion/zsh/_spring /usr/local/share/zsh/site-functions/_spring
+  23 spring
+  24 cat /root/.profile
+  25 cd
+  26 ls
+  27 ls -al
+  28 history
+  29 history> /opt/exception_log
+  30 history> /opt/exception_log/lo.txt
